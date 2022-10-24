@@ -1,0 +1,19 @@
+{
+  "name": "teamwork-backend",
+  "version": "1.0.0",
+  "description": "A socal network API for employees in an organsiation",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ebunwadi/teamWork-backend.git"
+  },
+  "author": "Ebube Nwadiokwu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ebunwadi/teamWork-backend/issues"
+  },
+  "homepage": "https://github.com/Ebunwadi/teamWork-backend#readme"
+}
