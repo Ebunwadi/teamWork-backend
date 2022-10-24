@@ -7,7 +7,8 @@ chai.should();
 
 chai.use(chaiHttp);
 
-describe('Admin can create an employee user account', () => {
+describe('Admin can create an employee user account and both admin/employee can login', () => {
+  // create-user test
   describe('POST /api/v1/auth/create-user', () => {
     it('it should create a new employee', (done) => {
       chai.request(server)
@@ -16,7 +17,7 @@ describe('Admin can create an employee user account', () => {
           {
             firstName: 'Ebbe',
             lastName: 'Peace',
-            email: 'dyppll@gmail.com',
+            email: 'dophhhty@gmail.com',
             password: 'password',
             gender: 'Male',
             jobRole: 'DEngin',
@@ -102,6 +103,43 @@ describe('Admin can create an employee user account', () => {
           response.should.have.status(401);
           response.body.should.be.a('object');
           response.body.should.have.property('error').eq('missing credentials');
+          done();
+        });
+    });
+  });
+
+  // login-user test
+  describe('POST /api/v1/auth/login-user', () => {
+    it('It should login a user with a valid email and password', (done) => {
+      chai.request(server)
+        .post('/api/v1/auth/login-user')
+        .send(
+          {
+            email: 'dophhhty@gmail.com',
+            password: 'password',
+          },
+        )
+        .end((err, response) => {
+          response.should.have.status(201);
+          response.body.should.be.a('object');
+          response.body.should.have.property('status').eq('success');
+          done();
+        });
+    });
+
+    it('It should not login a user with an invalid email and password', (done) => {
+      chai.request(server)
+        .post('/api/v1/auth/login-user')
+        .send(
+          {
+            email: 'dpll@gmail.com',
+            password: 'passwhhhh',
+          },
+        )
+        .end((err, response) => {
+          response.should.have.status(401);
+          response.body.should.be.a('object');
+          response.body.should.have.property('error').eq('invalid email or password');
           done();
         });
     });

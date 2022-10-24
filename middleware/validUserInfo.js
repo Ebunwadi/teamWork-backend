@@ -9,7 +9,7 @@ const validInfo = (req, res, next) => {
   if (req.path === '/create-user') {
     if (![email, firstName, password, lastName, gender,
       jobRole, department, address, isAdmin].every(Boolean)) {
-      res.status(401).json({
+      return res.status(401).json({
         status: 'error',
         error: 'missing credentials',
       });
@@ -18,6 +18,18 @@ const validInfo = (req, res, next) => {
       return res.status(401).json({
         status: 'error',
         error: 'invalid email',
+      });
+    }
+  } else if (req.path === '/login-user') {
+    if (![email, password].every(Boolean)) {
+      return res.status(401).json({
+        status: 'error',
+        error: 'missing credentials',
+      });
+    } else if (!validEmail(email)) {
+      return res.status(401).json({
+        status: 'error',
+        error: 'missing credentials',
       });
     }
   }

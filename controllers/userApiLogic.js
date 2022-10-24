@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import pool from '../database/connect.js';
 
-const createUser = async (req, res) => {
+export const createUser = async (req, res) => {
   const {
     firstName, lastName, email, password, gender, jobRole, department, address, isAdmin,
   } = req.body;
@@ -44,4 +44,40 @@ const createUser = async (req, res) => {
   });
 };
 
-export default createUser;
+export const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+  const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+  if (user.rows.length === 0) {
+    return res.status(401).json({
+      status: 'error',
+      error: 'invalid email or password',
+    });
+  }
+
+  const validPassword = await bcrypt.compare(password, user.rows[0].password);
+  if (!validPassword) {
+    return res.status(401).json({
+      status: 'error',
+      error: 'invalid email or password',
+    });
+  }
+
+  const userid = user.rows[0].userid;
+  const isAdmin = user.rows[0].isadmin;
+
+  const payload = {
+    userid,
+    email,
+    isAdmin,
+  };
+
+  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1hr' });
+  return res.status(201).json({
+    status: 'success',
+    data: {
+      message: 'succesfully logged in',
+      token,
+      payload,
+    },
+  });
+};
