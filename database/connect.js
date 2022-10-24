@@ -1,6 +1,8 @@
-import { Pool } from 'pg';
+import * as dotenv from 'dotenv';
+import * as pg from 'pg';
 
-require('dotenv').config();
+const { Pool } = pg.default;
+dotenv.config();
 
 const pool = new Pool({
   host: 'localhost',
