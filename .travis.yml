@@ -1,3 +1,5 @@
+sudo: false
+
 language: node_js
 
 os: windows
@@ -16,11 +18,11 @@ services:
   - postgresql
 
 addons:
-  postgresql: '11'
+  postgresql: '15'
   apt:
     packages:
-      - postgresql-11
-      - postgresql-client-11
+      - postgresql-15
+      - postgresql-client-15
 env:
   global:
     - PGPORT=5433
