@@ -12,17 +12,12 @@ cache:
 install:
   - npm install
 
-addons:
-  postgresql: '15.0'
-  apt:
-    packages:
-      - postgresql-15.0
+services:
+  - postgresql-15.0
 
 env:
   global:
-    - PGUSER=postgres
-    - PGPORT=5432
-    - PGHOST=localhost
+    - NODE_ENV=test
 
 before_script:
   - psql -c 'create database teamwork;' -U postgres
