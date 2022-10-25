@@ -1,9 +1,9 @@
 language: node_js
 
-os: windows10
+os: windows
 
 node_js:
-  - 'stable'
+  - node
 
 cache:
   directories:
