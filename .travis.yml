@@ -20,8 +20,8 @@ env:
     - NODE_ENV=test
 
 before_script:
-  - psql -c 'create database teamwork;' -U postgres -p 5433
-  - psql -c 'CREATE USER ebube WITH PASSWORD null;' -U postgres
+  - psql -c 'create database teamwork;' -U travis -p 5433
+  - psql -c 'CREATE USER ebube WITH PASSWORD null;' -U travis
 
 script:
   - npm test
