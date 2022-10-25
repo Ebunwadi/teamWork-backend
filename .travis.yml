@@ -13,7 +13,7 @@ install:
   - npm install
 
 services:
-  - postgresql-15.0
+  - postgresql
 
 env:
   global:
