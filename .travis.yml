@@ -15,6 +15,9 @@ install:
 services:
   - postgresql
 
+addons:
+  postgresql: '15.0'
+
 env:
   global:
     - NODE_ENV=test
