@@ -21,6 +21,7 @@ env:
 
 before_script:
   - psql -c 'create database teamwork;' -U postgres
+  - psql -c 'CREATE USER ebube WITH PASSWORD null;' -U postgres
 
 script:
   - npm test
