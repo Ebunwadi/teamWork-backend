@@ -13,9 +13,6 @@ install:
   - npm install
 
 services:
-  - postgresql
-
-addons:
   postgresql: '15'
   apt:
     packages:
