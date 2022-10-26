@@ -17,7 +17,7 @@ describe('Admin can create an employee user account and both admin/employee can 
           {
             firstName: 'Ebbe',
             lastName: 'Peace',
-            email: 'oyosodophhhty@gmail.com',
+            email: 'odosodophhhty@gmail.com',
             password: 'password',
             gender: 'Male',
             jobRole: 'DEngin',
@@ -115,7 +115,7 @@ describe('Admin can create an employee user account and both admin/employee can 
         .post('/api/v1/auth/login-user')
         .send(
           {
-            email: 'oyosodophhhty@gmail.com',
+            email: 'odosodophhhty@gmail.com',
             password: 'password',
           },
         )
