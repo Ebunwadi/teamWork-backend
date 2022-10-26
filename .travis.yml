@@ -19,10 +19,6 @@ env:
   global:
     - NODE_ENV=test
 
-before_script:
-  - psql -c 'CREATE DATABASE team_work_backend;' -U postgres
-  - psql -c 'CREATE USER ebube WITH PASSWORD null;' -U postgres
-
 script:
   - npm test
 
