@@ -1,4 +1,4 @@
-export default (req, res, next) => {
+const adminAuth = (req, res, next) => {
   if (req.path === '/create-user') {
     if (req.body.isAdmin === false) {
       return res.status(403).json({
@@ -10,3 +10,5 @@ export default (req, res, next) => {
 
   next();
 };
+
+export default adminAuth;

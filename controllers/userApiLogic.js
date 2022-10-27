@@ -1,8 +1,19 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import pool from '../database/connect.js';
+import validateUser from '../validations/validate-signup.js';
+import validateLogin from '../validations/validate-login.js';
 
 export const createUser = async (req, res) => {
+  const { error } = validateUser(req.body);
+  if (error) {
+    // console.log(error);
+    return res.status(401).json({
+      status: 'error',
+      error: error.details[0].message,
+    });
+  }
+
   const {
     firstName, lastName, email, password, gender, jobRole, department, address, isAdmin,
   } = req.body;
@@ -45,12 +56,20 @@ export const createUser = async (req, res) => {
 };
 
 export const loginUser = async (req, res) => {
+  const { error } = validateLogin(req.body);
+  if (error) {
+    return res.status(401).json({
+      status: 'error',
+      error: error.details[0].message,
+    });
+  }
+
   const { email, password } = req.body;
   const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
   if (user.rows.length === 0) {
     return res.status(401).json({
       status: 'error',
-      error: 'invalid email or password',
+      error: 'invalid email',
     });
   }
 
@@ -58,7 +77,7 @@ export const loginUser = async (req, res) => {
   if (!validPassword) {
     return res.status(401).json({
       status: 'error',
-      error: 'invalid email or password',
+      error: 'invalid password',
     });
   }
 

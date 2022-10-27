@@ -17,7 +17,7 @@ describe('Admin can create an employee user account and both admin/employee can 
           {
             firstName: 'Ebbe',
             lastName: 'Peace',
-            email: 'elodosado@gmail.com',
+            email: 'heylodosa@gmail.com',
             password: 'password',
             gender: 'Male',
             jobRole: 'DEngin',
@@ -78,7 +78,7 @@ describe('Admin can create an employee user account and both admin/employee can 
         .end((err, response) => {
           response.should.have.status(401);
           response.body.should.be.a('object');
-          response.body.should.have.property('error').eq('invalid email');
+          response.body.should.have.property('status').eq('error');
           done();
         });
     });
@@ -102,7 +102,7 @@ describe('Admin can create an employee user account and both admin/employee can 
         .end((err, response) => {
           response.should.have.status(401);
           response.body.should.be.a('object');
-          response.body.should.have.property('error').eq('missing credentials');
+          response.body.should.have.property('status').eq('error');
           done();
         });
     });
@@ -115,7 +115,7 @@ describe('Admin can create an employee user account and both admin/employee can 
         .post('/api/v1/auth/login-user')
         .send(
           {
-            email: 'elodosado@gmail.com',
+            email: 'heylodosa@gmail.com',
             password: 'password',
           },
         )
@@ -139,7 +139,7 @@ describe('Admin can create an employee user account and both admin/employee can 
         .end((err, response) => {
           response.should.have.status(401);
           response.body.should.be.a('object');
-          response.body.should.have.property('error').eq('invalid email or password');
+          response.body.should.have.property('error').eq('invalid email');
           done();
         });
     });
