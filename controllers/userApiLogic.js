@@ -7,7 +7,6 @@ import validateLogin from '../validations/validate-login.js';
 export const createUser = async (req, res) => {
   const { error } = validateUser(req.body);
   if (error) {
-    // console.log(error);
     return res.status(401).json({
       status: 'error',
       error: error.details[0].message,
