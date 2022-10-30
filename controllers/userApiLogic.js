@@ -1,18 +1,8 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import pool from '../database/connect.js';
-import validateUser from '../validations/validate-signup.js';
-import validateLogin from '../validations/validate-login.js';
 
 export const createUser = async (req, res) => {
-  const { error } = validateUser(req.body);
-  if (error) {
-    return res.status(401).json({
-      status: 'error',
-      error: error.details[0].message,
-    });
-  }
-
   const {
     firstName, lastName, email, password, gender, jobRole, department, address, isAdmin,
   } = req.body;
@@ -30,12 +20,12 @@ export const createUser = async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, salt);
 
   const newUser = await pool.query(
-    `INSERT INTO users (firstName, lastName, email, password, gender, jobRole, department, address, isAdmin) 
+    `INSERT INTO users (first_name, last_name, email, password, gender, job_role, department, address, is_admin) 
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
     [firstName, lastName, email, hashedPassword, gender, jobRole, department, address, isAdmin],
   );
 
-  const userid = newUser.rows[0].userid;
+  const userid = newUser.rows[0].id;
 
   const payload = {
     userid,
@@ -55,14 +45,6 @@ export const createUser = async (req, res) => {
 };
 
 export const loginUser = async (req, res) => {
-  const { error } = validateLogin(req.body);
-  if (error) {
-    return res.status(401).json({
-      status: 'error',
-      error: error.details[0].message,
-    });
-  }
-
   const { email, password } = req.body;
   const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
   if (user.rows.length === 0) {
@@ -80,8 +62,8 @@ export const loginUser = async (req, res) => {
     });
   }
 
-  const userid = user.rows[0].userid;
-  const isAdmin = user.rows[0].isadmin;
+  const userid = user.rows[0].id;
+  const isAdmin = user.rows[0].is_admin;
 
   const payload = {
     userid,

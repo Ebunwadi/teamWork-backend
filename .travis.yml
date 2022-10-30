@@ -12,16 +12,10 @@ cache:
 install:
   - npm install
 
-services:
-  postgresql: '15'
-  apt:
-    packages:
-      - postgresql-15
-      - postgresql-client-15
+services: postgresql
+
 env:
   global:
-    - PGPORT=5433
-    - PGUSER=travis
     - NODE_ENV=test
 
 before_script:
