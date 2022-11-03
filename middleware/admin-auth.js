@@ -1,8 +1,8 @@
 const adminAuth = (req, res, next) => {
-  if (req.body.isAdmin === false) {
+  if (req.user.isAdmin === false) {
     return res.status(403).json({
       status: 'error',
-      error: 'Only an admin can register employees',
+      error: 'Only an admin can handle this operation',
     });
   }
 

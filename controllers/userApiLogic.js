@@ -25,10 +25,10 @@ export const createUser = async (req, res) => {
     [firstName, lastName, email, hashedPassword, gender, jobRole, department, address, isAdmin],
   );
 
-  const userid = newUser.rows[0].id;
+  const userId = newUser.rows[0].id;
 
   const payload = {
-    userid,
+    userId,
     email,
     isAdmin,
   };

@@ -1,35 +1,71 @@
+import * as dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
+import pool from '../database/connect.js';
 import server from '../server.js';
+
+dotenv.config();
 
 // ASSERTION STYLE
 chai.should();
 
 chai.use(chaiHttp);
 
+const email = 'hellyebus@gmail.com';
+const token = jwt.sign({ userId: 101, isAdmin: true, email: 'my@gmail.com' }, process.env.JWT_SECRET);
+
 describe('Admin can create an employee user account and both admin/employee can login', () => {
   // create-user test
-  it('it should create a new employee', (done) => {
+  it('should create a new employee when registered by an Admin', (done) => {
+    chai.request(server)
+      .post('/api/v1/auth/create-user')
+      .set('authorization', `Bearer ${token}`)
+      .send(
+        {
+          firstName: 'Ebbe',
+          lastName: 'Peace',
+          email,
+          password: 'password',
+          gender: 'Male',
+          jobRole: 'DEngin',
+          department: 'Admin',
+          address: 'street',
+          isAdmin: false,
+        },
+      )
+      .end((err, response) => {
+        response.should.have.status(201);
+        response.body.should.be.a('object');
+        response.body.should.have.property('status').eq('success');
+        done();
+      });
+  });
+
+  after(async () => {
+    await pool.query('DELETE FROM users WHERE email =$1', [email]);
+  });
+
+  it('should return 403 if user is not an admin/doesnt have a token', (done) => {
     chai.request(server)
       .post('/api/v1/auth/create-user')
       .send(
         {
           firstName: 'Ebbe',
           lastName: 'Peace',
-          email: 'hellodosa@gmail.com',
+          email: 'hey@gmail.com',
           password: 'password',
           gender: 'Male',
           jobRole: 'DEngin',
           department: 'Admin',
           address: 'street',
-          isAdmin: true,
+          isAdmin: false,
         },
       )
       .end((err, response) => {
-        response.should.have.status(201);
+        response.should.have.status(403);
         response.body.should.be.a('object');
-        response.body.data.payload.should.have.property('isAdmin').eq(true);
-        response.body.should.have.property('status').eq('success');
+        response.body.should.have.property('status').eq('error');
         done();
       });
   });
@@ -37,6 +73,7 @@ describe('Admin can create an employee user account and both admin/employee can 
   it('It should not create a new user with same email as another', (done) => {
     chai.request(server)
       .post('/api/v1/auth/create-user')
+      .set('authorization', `Bearer ${token}`)
       .send(
         {
           firstName: 'Ebus',
@@ -47,7 +84,7 @@ describe('Admin can create an employee user account and both admin/employee can 
           jobRole: ' Engineer',
           department: 'pro',
           address: 'street',
-          isAdmin: true,
+          isAdmin: false,
         },
       )
       .end((err, response) => {
@@ -61,6 +98,7 @@ describe('Admin can create an employee user account and both admin/employee can 
   it('it should not create employee with an invalid email', (done) => {
     chai.request(server)
       .post('/api/v1/auth/create-user')
+      .set('authorization', `Bearer ${token}`)
       .send(
         {
           firstName: 'Ebus',
@@ -71,7 +109,7 @@ describe('Admin can create an employee user account and both admin/employee can 
           jobRole: ' Engineer',
           department: 'Admin',
           address: 'street',
-          isAdmin: true,
+          isAdmin: false,
         },
       )
       .end((err, response) => {
@@ -85,6 +123,7 @@ describe('Admin can create an employee user account and both admin/employee can 
   it('it should not create an employee with one or more blank textfields', (done) => {
     chai.request(server)
       .post('/api/v1/auth/create-user')
+      .set('authorization', `Bearer ${token}`)
       .send(
         {
           firstName: '',
@@ -95,7 +134,7 @@ describe('Admin can create an employee user account and both admin/employee can 
           jobRole: ' Engineer',
           department: 'Admin',
           address: 'street',
-          isAdmin: true,
+          isAdmin: false,
         },
       )
       .end((err, response) => {
