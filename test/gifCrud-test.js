@@ -2,7 +2,6 @@ import * as dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import pool from '../database/connect.js';
 import server from '../server.js';
 
 dotenv.config();
@@ -65,7 +64,63 @@ describe('gif CRUD api', () => {
         response.should.have.status(403);
         response.body.should.be.a('object');
         response.body.should.have.property('status').eq('error');
-        // done();
+      });
+  });
+
+  //   delete gifs
+  it('should return a 404 if no gif with the requested id is found', () => {
+    chai.request(server)
+      .delete('/api/v1/auth/delete-gifs/50')
+      .set('authorization', `Bearer ${token}`)
+      .end((err, response) => {
+        response.should.have.status(404);
+        response.body.should.be.a('object');
+        response.body.should.have.property('status').eq('error');
+      });
+  });
+
+  it('should return a 403 if an employee wants to delete another employees gif', () => {
+    chai.request(server)
+      .delete('/api/v1/auth/delete-gifs/1')
+      .set('authorization', `Bearer ${token}`)
+      .end((err, response) => {
+        response.should.have.status(403);
+        response.body.should.be.a('object');
+        response.body.should.have.property('status').eq('error');
+      });
+  });
+  // get all gifs
+  it('should get all gifs', () => {
+    chai.request(server)
+      .get('/api/v1/auth/get-gifs')
+      .set('authorization', `Bearer ${token}`)
+      .end((err, response) => {
+        response.should.have.status(200);
+        response.body.should.be.a('object');
+        response.body.should.have.property('status').eq('success');
+      });
+  });
+
+  // get single gif
+  it('should get a gif with the requested params', () => {
+    chai.request(server)
+      .get('/api/v1/auth/get-single-gif/1')
+      .set('authorization', `Bearer ${token}`)
+      .end((err, response) => {
+        response.should.have.status(200);
+        response.body.should.be.a('object');
+        response.body.should.have.property('status').eq('success');
+      });
+  });
+
+  it('should return a 404 if no gif with the requested id is found', () => {
+    chai.request(server)
+      .get('/api/v1/auth/get-single-gif/50')
+      .set('authorization', `Bearer ${token}`)
+      .end((err, response) => {
+        response.should.have.status(404);
+        response.body.should.be.a('object');
+        response.body.should.have.property('status').eq('error');
       });
   });
 });
