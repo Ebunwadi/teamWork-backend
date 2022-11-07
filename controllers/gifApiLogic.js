@@ -70,7 +70,7 @@ export const deleteGif = async (req, res) => {
 
     await cloudinary.v2.uploader.destroy(gifDB.rows[0].public_id);
 
-    await pool.query('DELETE FROM gifs WHERE id = $1', [id]);
+    await pool.query('DELETE FROM gifs WHERE id = $1', [gifId]);
     return res.status(202).json({
       status: 'success',
       data: {
