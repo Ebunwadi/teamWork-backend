@@ -2,6 +2,7 @@ import * as dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
+import cloudinary from 'cloudinary';
 import server from '../server.js';
 
 dotenv.config();
@@ -32,6 +33,10 @@ describe('gif CRUD api', () => {
         done();
       });
   });
+
+  // after(async () => {
+  //   await cloudinary.v2.uploader.destroy(public_id);
+  // });
 
   it('should not upload a gif if title/image field is empty', () => {
     chai.request(server)
