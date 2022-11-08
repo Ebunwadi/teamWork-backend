@@ -4,7 +4,7 @@ import {
   deleteGif,
   getAllGifs,
   getSingleGif,
-} from '../controllers/gifApiLogic.js';
+} from '../controllers/gifController.js';
 import jwtAuth from '../middleware/jwtAuth.js';
 
 const router = Router();

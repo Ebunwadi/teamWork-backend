@@ -22,11 +22,11 @@ export const createGif = async (req, res) => {
       folder: 'gifs',
     });
     const { secure_url: secureUrl, public_id: publicId, created_at: createdOn } = result;
-    const postedBy = req.user.email;
+    const userId = req.user.userid;
     const gifDB = await pool.query(
-      `INSERT INTO gifs (title, image_url, created_on, public_id, posted_by) 
+      `INSERT INTO gifs (title, image_url, created_on, public_id, user_id) 
           VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-      [title, secureUrl, createdOn, publicId, postedBy],
+      [title, secureUrl, createdOn, publicId, userId],
     );
 
     return res.status(201).json({
@@ -37,7 +37,7 @@ export const createGif = async (req, res) => {
         createdOn,
         title,
         imageUrl: secureUrl,
-        postedBy,
+        userId,
       },
     });
   } catch (error) {
@@ -61,7 +61,7 @@ export const deleteGif = async (req, res) => {
       });
     }
 
-    if (gifDB.rows[0].posted_by !== req.user.email) {
+    if (gifDB.rows[0].user_id !== req.user.userid) {
       return res.status(403).json({
         status: 'error',
         message: 'You cannot delete a Gif you didnt post',

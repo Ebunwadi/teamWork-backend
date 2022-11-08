@@ -19,9 +19,9 @@ CREATE TABLE gifs (
     image_url VARCHAR(255) NOT NULL,
     public_id VARCHAR(255) NOT NULL,
     created_on timestamp with time zone NOT NULL,
-    posted_by VARCHAR(50) NOT NULL,
-    FOREIGN KEY (posted_by)
-    REFERENCES users (email)
+    user_id serial NOT NULL,
+    FOREIGN KEY (user_id)
+    REFERENCES users (id)
 );
 
 
