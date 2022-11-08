@@ -13,3 +13,15 @@ CREATE TABLE users (
     is_admin BOOLEAN
 );
 
+CREATE TABLE gifs (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    image_url VARCHAR(255) NOT NULL,
+    public_id VARCHAR(255) NOT NULL,
+    created_on timestamp with time zone NOT NULL,
+    user_id serial NOT NULL,
+    FOREIGN KEY (user_id)
+    REFERENCES users (id)
+);
+
+
