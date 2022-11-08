@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import server from '../server.js';
+import pool from '../database/connect.js';
 
 dotenv.config();
 
@@ -11,7 +12,8 @@ chai.should();
 
 chai.use(chaiHttp);
 
-const token = jwt.sign({ userId: 101, isAdmin: true, email: 'my@gmail.com' }, process.env.JWT_SECRET);
+const token = jwt.sign({ userid: 90, isAdmin: true, email: 'hea@gmail.com' }, process.env.JWT_SECRET);
+const tokens = jwt.sign({ userid: 4, isAdmin: true, email: 'hellodosa@gmail.com' }, process.env.JWT_SECRET);
 
 describe('gif CRUD api', () => {
 // post gifs
@@ -81,7 +83,7 @@ describe('gif CRUD api', () => {
 
   it('should return a 403 if an employee wants to delete another employees gif', () => {
     chai.request(server)
-      .delete('/api/v1/auth/delete-gifs/1')
+      .delete('/api/v1/auth/delete-gifs/2')
       .set('authorization', `Bearer ${token}`)
       .end((err, response) => {
         response.should.have.status(403);
@@ -104,7 +106,7 @@ describe('gif CRUD api', () => {
   // get single gif
   it('should get a gif with the requested params', () => {
     chai.request(server)
-      .get('/api/v1/auth/get-single-gif/1')
+      .get('/api/v1/auth/get-single-gif/2')
       .set('authorization', `Bearer ${token}`)
       .end((err, response) => {
         response.should.have.status(200);
@@ -121,6 +123,59 @@ describe('gif CRUD api', () => {
         response.should.have.status(404);
         response.body.should.be.a('object');
         response.body.should.have.property('status').eq('error');
+      });
+  });
+
+  // test gif comments
+  it('should post a comment successfully', (done) => {
+    chai.request(server)
+      .post('/api/v1/auth/gif-comment/2/comment')
+      .set('authorization', `Bearer ${tokens}`)
+      .send(
+        {
+          comment: 'a comment',
+        },
+      )
+      .end((err, response) => {
+        console.log(err);
+        response.body.should.have.status('success');
+        response.body.should.be.a('object');
+        response.body.should.have.property('status').eq('success');
+        done();
+      });
+  });
+
+  it('should return a 404 if the specified gifId is not found', (done) => {
+    chai.request(server)
+      .post('/api/v1/auth/gif-comment/20/comment')
+      .set('authorization', `Bearer ${token}`)
+      .send(
+        {
+          comment: 'a comment',
+        },
+      )
+      .end((err, response) => {
+        response.should.have.status(404);
+        response.body.should.be.a('object');
+        response.body.should.have.property('status').eq('error');
+        done();
+      });
+  });
+
+  it('should not post a comment if the field is empty or more than 100', (done) => {
+    chai.request(server)
+      .post('/api/v1/auth/gif-comment/2/comment')
+      .set('authorization', `Bearer ${token}`)
+      .send(
+        {
+          comment: '',
+        },
+      )
+      .end((err, response) => {
+        response.should.have.status(401);
+        response.body.should.be.a('object');
+        response.body.should.have.property('status').eq('error');
+        done();
       });
   });
 });

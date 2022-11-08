@@ -24,4 +24,13 @@ CREATE TABLE gifs (
     REFERENCES users (id)
 );
 
+CREATE TABLE gif_comment (
+    comment_id SERIAL PRIMARY KEY,
+    comments VARCHAR NOT NULL,        
+    created_at timestamp with time zone NOT NULL,
+    gif_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    FOREIGN KEY (user_id) 
+    REFERENCES users (id)
+);
 

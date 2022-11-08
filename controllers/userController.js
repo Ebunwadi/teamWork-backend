@@ -33,7 +33,7 @@ export const createUser = async (req, res) => {
     isAdmin,
   };
 
-  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '24hr' });
+  const token = jwt.sign(payload, process.env.JWT_SECRET);
   return res.status(201).json({
     status: 'success',
     data: {
