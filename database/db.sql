@@ -19,8 +19,20 @@ CREATE TABLE gifs (
     image_url VARCHAR(255) NOT NULL,
     public_id VARCHAR(255) NOT NULL,
     created_on timestamp with time zone NOT NULL,
+    is_flagged BOOLEAN DEFAULT false,
     user_id serial NOT NULL,
     FOREIGN KEY (user_id)
+    REFERENCES users (id)
+);
+
+CREATE TABLE gif_comment (
+    id SERIAL PRIMARY KEY,
+    comments VARCHAR NOT NULL,        
+    created_at timestamp with time zone NOT NULL,
+    gif_id INTEGER NOT NULL,
+    is_flagged BOOLEAN DEFAULT false,
+    user_id INTEGER NOT NULL,
+    FOREIGN KEY (user_id) 
     REFERENCES users (id)
 );
 
