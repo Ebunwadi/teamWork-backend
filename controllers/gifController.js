@@ -110,3 +110,55 @@ export const getSingleGif = async (req, res) => {
     data: gif.rows[0],
   });
 };
+
+// flag a gif
+export const flagGif = async (req, res) => {
+  const { gifId } = req.params;
+  const { isFlagged } = req.body;
+  const gif = await pool.query('SELECT * FROM gifs WHERE id = $1', [gifId]);
+  if (gif.rows.length === 0) {
+    return res.status(404).json({
+      status: 'error',
+      error: 'Gif with the specified gifId NOT found',
+    });
+  }
+
+  if (isFlagged) {
+    await pool.query('UPDATE gifs set is_flagged = $1 WHERE id = $2', [isFlagged, gifId]);
+    return res.status(200).json({
+      status: 'success',
+      data: {
+        message: 'Gif successfully flagged',
+      },
+    });
+  }
+};
+
+// admin can delete a gif flagged as inappropriate
+export const deleteFlaggedGif = async (req, res) => {
+  const { gifId } = req.params;
+  const gif = await pool.query('SELECT * FROM gifs WHERE id = $1', [gifId]);
+  if (gif.rows.length === 0) {
+    return res.status(404).json({
+      status: 'error',
+      error: 'there is no gif with this id',
+    });
+  }
+
+  if (gif.rows[0].is_flagged === true) {
+    await cloudinary.v2.uploader.destroy(gif.rows[0].public_id);
+
+    await pool.query('DELETE FROM gifs WHERE id = $1', [gifId]);
+    return res.status(202).json({
+      status: 'success',
+      data: {
+        message: 'Gif successfully deleted',
+      },
+    });
+  } else {
+    return res.status(403).json({
+      status: 'error',
+      message: 'you cannot delete this Gif',
+    });
+  }
+};

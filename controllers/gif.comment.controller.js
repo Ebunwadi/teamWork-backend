@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 import pool from '../database/connect.js';
 
-const createGifComment = async (req, res) => {
+export const createGifComment = async (req, res) => {
   try {
     const { comment } = req.body;
     const { gifId } = req.params;
@@ -37,4 +37,52 @@ const createGifComment = async (req, res) => {
   }
 };
 
-export default createGifComment;
+// flag a comment
+export const flagGifComment = async (req, res) => {
+  const { gifId } = req.params;
+  const { isFlagged } = req.body;
+  const gifComment = await pool.query('SELECT * FROM gif_comment WHERE gif_id = $1', [gifId]);
+  if (gifComment.rows.length === 0) {
+    return res.status(404).json({
+      status: 'error',
+      error: 'comment with the specified gifId NOT found',
+    });
+  }
+
+  if (isFlagged) {
+    await pool.query('UPDATE gif_comment set is_flagged = $1 WHERE gif_id = $2', [isFlagged, gifId]);
+    return res.status(200).json({
+      status: 'success',
+      data: {
+        message: 'comment successfully flagged',
+      },
+    });
+  }
+};
+
+// admin can delete a comment flagged as inappropriate
+export const deleteFlaggedGifComment = async (req, res) => {
+  const { gifId } = req.params;
+  const gifComment = await pool.query('SELECT * FROM gif_comment WHERE gif_id = $1', [gifId]);
+  if (gifComment.rows.length === 0) {
+    return res.status(404).json({
+      status: 'error',
+      error: 'there is no comment on this gif',
+    });
+  }
+
+  if (gifComment.rows[0].is_flagged === true) {
+    await pool.query('DELETE FROM gif_comment WHERE gif_id = $1', [gifId]);
+    return res.status(202).json({
+      status: 'success',
+      data: {
+        message: 'comment successfully deleted',
+      },
+    });
+  } else {
+    return res.status(403).json({
+      status: 'error',
+      message: 'you cannot delete this Gif',
+    });
+  }
+};

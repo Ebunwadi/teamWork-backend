@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import server from '../server.js';
-import pool from '../database/connect.js';
 
 dotenv.config();
 
