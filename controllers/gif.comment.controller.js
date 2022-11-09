@@ -29,7 +29,6 @@ export const createGifComment = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log(error);
     return res.status(500).send({
       status: 'error',
       message: 'something went wrong',
@@ -71,18 +70,11 @@ export const deleteFlaggedGifComment = async (req, res) => {
     });
   }
 
-  if (gifComment.rows[0].is_flagged === true) {
-    await pool.query('DELETE FROM gif_comment WHERE gif_id = $1', [gifId]);
-    return res.status(202).json({
-      status: 'success',
-      data: {
-        message: 'comment successfully deleted',
-      },
-    });
-  } else {
-    return res.status(403).json({
-      status: 'error',
-      message: 'you cannot delete this Gif',
-    });
-  }
+  await pool.query('DELETE FROM gif_comment WHERE gif_id = $1', [gifId]);
+  return res.status(202).json({
+    status: 'success',
+    data: {
+      message: 'comment successfully deleted',
+    },
+  });
 };
