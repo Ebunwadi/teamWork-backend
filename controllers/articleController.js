@@ -148,7 +148,7 @@ export const flagArticle = async (req, res) => {
   }
 };
 
-// admin can delete a gif flagged as inappropriate
+// admin can delete an article flagged as inappropriate
 export const deleteFlaggedArticle = async (req, res) => {
   const { id } = req.params;
   const articles = await pool.query('SELECT * FROM articles WHERE id = $1', [id]);
