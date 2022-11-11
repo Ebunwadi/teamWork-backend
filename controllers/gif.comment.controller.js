@@ -16,7 +16,7 @@ export const createGifComment = async (req, res) => {
       });
     }
     await pool.query(`INSERT INTO gif_comment (comments, created_at, gif_id, user_id) 
-        VALUES ($1, $2, $3, $4)`, [comment, createdOn, gifId, userId]);
+        VALUES ($1, $2, $3, $4) RETURNING *`, [comment, createdOn, gifId, userId]);
 
     return res.status(201).json({
       status: 'success',
