@@ -36,4 +36,31 @@ CREATE TABLE gif_comment (
     REFERENCES users (id)
 );
 
+CREATE TABLE category (
+    id serial PRIMARY KEY, 
+    category_name VARCHAR (50) UNIQUE NOT NULL
+);
+
+CREATE TABLE articles (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(50) NOT NULL,
+    article VARCHAR(2500) NOT NULL,
+    user_id INTEGER NOT NULL,
+    is_flagged BOOLEAN DEFAULT false,
+    created_at timestamp with time zone NOT NULL,
+    category_id INTEGER NOT NULL,
+    FOREIGN KEY (user_id) 
+    REFERENCES users (id)
+);
+
+CREATE TABLE article_comment (
+    id SERIAL PRIMARY KEY,
+    comments VARCHAR NOT NULL,        
+    created_at timestamp with time zone NOT NULL,
+    article_id INTEGER NOT NULL,
+    is_flagged BOOLEAN DEFAULT false,
+    user_id INTEGER NOT NULL,
+    FOREIGN KEY (user_id) 
+    REFERENCES users (id)
+);
 

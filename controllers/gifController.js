@@ -144,21 +144,12 @@ export const deleteFlaggedGif = async (req, res) => {
       error: 'there is no gif with this id',
     });
   }
-
-  if (gif.rows[0].is_flagged === true) {
-    await cloudinary.v2.uploader.destroy(gif.rows[0].public_id);
-
-    await pool.query('DELETE FROM gifs WHERE id = $1', [gifId]);
-    return res.status(202).json({
-      status: 'success',
-      data: {
-        message: 'Gif successfully deleted',
-      },
-    });
-  } else {
-    return res.status(403).json({
-      status: 'error',
-      message: 'you cannot delete this Gif',
-    });
-  }
+  await cloudinary.v2.uploader.destroy(gif.rows[0].public_id);
+  await pool.query('DELETE FROM gifs WHERE id = $1', [gifId]);
+  return res.status(202).json({
+    status: 'success',
+    data: {
+      message: 'Gif successfully deleted',
+    },
+  });
 };
