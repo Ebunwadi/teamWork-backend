@@ -47,6 +47,22 @@ export const getCategory = async (req, res) => {
   });
 };
 
+// employees can view all articles in a category
+export const getAllArticlesInCategory = async (req, res) => {
+  const { id } = req.params;
+  const article = await pool.query(`SELECT * FROM articles WHERE category_id = ${id}`);
+  if (article.rows.length === 0) {
+    return res.status(404).json({
+      status: 'error',
+      error: 'No articles in the specified Category',
+    });
+  }
+  return res.status(200).json({
+    status: 'success',
+    data: article.rows,
+  });
+};
+
 // admin can delete a category
 export const deleteCategory = async (req, res) => {
   const categoryId = req.params.id;

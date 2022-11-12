@@ -6,7 +6,6 @@ import {
   deleteFlaggedArticle,
   flagArticle,
   getAllArticles,
-  getAllArticlesInCategory,
   getArticle,
 } from '../controllers/articleController.js';
 import { createArticleComment, flagArticleComment, deleteFlaggedArticleComment } from '../controllers/article.comment.controller.js';
@@ -23,7 +22,6 @@ router.delete('/delete-article/:id', jwtAuth, deleteArticle);
 router.delete('/delete-flagged-article/:id', jwtAuth, adminAuth, deleteFlaggedArticle);
 router.get('/get-article/:id', jwtAuth, getArticle);
 router.get('/get-all-articles', jwtAuth, getAllArticles);
-router.get('/get-all-articles-in-category/:id', jwtAuth, getAllArticlesInCategory);
 router.post('/article-comment/:id', jwtAuth, validateArticleComment, createArticleComment);
 router.put('/flag-article-comment/:id', jwtAuth, flagArticleComment);
 router.delete('/delete-flag-article-comment/:id', jwtAuth, adminAuth, deleteFlaggedArticleComment);
