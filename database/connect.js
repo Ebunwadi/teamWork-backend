@@ -18,5 +18,6 @@ const pool = new Pool({
   password: process.env.RENDER_PASSWORD,
   port: 5432,
   database: 'teamwork_fcgt',
+  ssl: true,
 });
 export default pool;
