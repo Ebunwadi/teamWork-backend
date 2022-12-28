@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import nodemailer from 'nodemailer';
 import pool from '../database/connect.js';
 
 export const createUser = async (req, res) => {
@@ -62,11 +63,11 @@ export const loginUser = async (req, res) => {
     });
   }
 
-  const userid = user.rows[0].id;
+  const userId = user.rows[0].id;
   const isAdmin = user.rows[0].is_admin;
 
   const payload = {
-    userid,
+    userId,
     email,
     isAdmin,
   };
@@ -80,4 +81,96 @@ export const loginUser = async (req, res) => {
       payload,
     },
   });
+};
+
+// forgot password functionality
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (user.rows.length === 0) {
+      return res.status(401).json({
+        status: 'error',
+        error: 'Email doesnt exist',
+      });
+    }
+    const userId = user.rows[0].id;
+    const isAdmin = user.rows[0].is_admin;
+    const firstName = user.rows[0].first_name;
+
+    const payload = {
+      userId,
+      email,
+      isAdmin,
+    };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '5m' });
+    const link = `https://ebubeproject.onrender.com/api/v1/auth/reset-password/${userId}/${token}`;
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'ebuwonders.ep@gmail.com',
+        pass: process.env.MAIL_PASSWORD,
+      },
+    });
+    const mailOptions = {
+      from: 'ebuwonders.ep@gmail.com',
+      to: email,
+      subject: 'Password Reset',
+      text: `hello ${firstName}, you requested a change in your passowrd
+      you can reset it using this ${link}`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log(`Email sent: ${info.response}`);
+      }
+    });
+    console.log(link);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const resetPassowrd = async (req, res) => {
+  const { id } = req.params;
+  const user = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+  if (user.rows.length === 0) {
+    return res.status(401).json({
+      status: 'error',
+      error: 'User does not exist',
+    });
+  }
+  res.redirect('localhost:3000/reset-password');
+};
+
+export const passwordReset = async (req, res) => {
+  const { id } = req.params;
+  const { password } = req.body;
+  const user = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+  if (user.rows.length === 0) {
+    return res.status(401).json({
+      status: 'error',
+      error: 'User does not exist',
+    });
+  }
+
+  try {
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    await pool.query(`UPDATE users SET password = $1 WHERE id = ${id}`, [hashedPassword]);
+    return res.status(201).json({
+      status: 'success',
+      data: {
+        message: 'Password successfully updated',
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({ status: 'Something Went Wrong' });
+  }
 };
