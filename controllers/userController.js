@@ -117,8 +117,8 @@ export const forgotPassword = async (req, res) => {
       from: 'ebuwonders.ep@gmail.com',
       to: email,
       subject: 'Password Reset',
-      text: `hello ${firstName}, you requested a change in your passowrd
-      you can reset it using this ${link}`,
+      text: `hello ${firstName}, you requested a change in your password you can reset it using this link ${link}.
+The link expires in five mins`,
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
