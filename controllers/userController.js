@@ -137,7 +137,7 @@ The link expires in five mins`,
   }
 };
 
-export const resetPassowrd = async (req, res) => {
+export const resetPassword = async (req, res) => {
   const { id } = req.params;
   const user = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
   if (user.rows.length === 0) {
@@ -146,7 +146,7 @@ export const resetPassowrd = async (req, res) => {
       error: 'User does not exist',
     });
   }
-  res.redirect('localhost:3000/reset-password');
+  res.redirect('https://preeminent-meringue-b5c8b0.netlify.app/resetPassword');
 };
 
 export const passwordReset = async (req, res) => {
@@ -169,10 +169,13 @@ export const passwordReset = async (req, res) => {
     return res.status(201).json({
       status: 'success',
       data: {
-        message: 'Password successfully updated',
+        message: 'Password Successfully Updated',
       },
     });
   } catch (error) {
-    res.json({ status: 'Something Went Wrong' });
+    res.json({
+      status: 'Error',
+      error: 'Something Went Wrong',
+    });
   }
 };
