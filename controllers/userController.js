@@ -129,6 +129,10 @@ The link expires in five mins`,
         res.json({
           status: 'success',
           message: `Email sent: ${info.response}`,
+          data: {
+            token,
+            userId,
+          },
         });
       }
     });
@@ -138,7 +142,7 @@ The link expires in five mins`,
 };
 
 export const resetPassword = async (req, res) => {
-  const { id } = req.params;
+  const { id, token } = req.params;
   const user = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
   if (user.rows.length === 0) {
     return res.status(401).json({
@@ -146,21 +150,63 @@ export const resetPassword = async (req, res) => {
       error: 'User does not exist',
     });
   }
-  res.redirect('https://preeminent-meringue-b5c8b0.netlify.app/resetPassword');
+  try {
+    const verifiedUser = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = verifiedUser;
+    const userId = req.user.id;
+    if (id !== userId) {
+      return res.status(401).json({
+        status: 'error',
+        error: 'ID does not match',
+      });
+    }
+    res.status(201).json({
+      status: 'success',
+      data: {
+        token,
+        userId,
+      },
+    });
+    res.redirect('https://preeminent-meringue-b5c8b0.netlify.app/resetPassword');
+  } catch (error) {
+    return res.status(401).json({
+      status: 'error',
+      error,
+    });
+  }
+  if (!token) {
+    return res.status(403).json({
+      status: 'error',
+      error: 'authorization denied',
+    });
+  }
 };
 
 export const passwordReset = async (req, res) => {
-  const { id } = req.params;
-  const { password } = req.body;
-  const user = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
-  if (user.rows.length === 0) {
+  const { id, token } = req.params;
+  const verifiedUser = jwt.verify(token, process.env.JWT_SECRET);
+  req.user = verifiedUser;
+  if (id !== req.user.id) {
     return res.status(401).json({
       status: 'error',
-      error: 'User does not exist',
+      error: 'ID does not match',
     });
   }
-
+  if (!token) {
+    return res.status(403).json({
+      status: 'error',
+      error: 'authorization denied',
+    });
+  }
   try {
+    const { password } = req.body;
+    const user = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+    if (user.rows.length === 0) {
+      return res.status(401).json({
+        status: 'error',
+        error: 'User does not exist',
+      });
+    }
     const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -173,9 +219,9 @@ export const passwordReset = async (req, res) => {
       },
     });
   } catch (error) {
-    res.json({
-      status: 'Error',
-      error: 'Something Went Wrong',
+    return res.status(401).json({
+      status: 'error',
+      error,
     });
   }
 };
