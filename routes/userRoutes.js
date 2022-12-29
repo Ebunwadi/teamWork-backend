@@ -16,7 +16,7 @@ const router = Router();
 router.post('/create-user', jwtAuth, adminAuth, validateSignUp, createUser);
 router.post('/login-user', validateLogin, loginUser);
 router.post('/forgot-password', forgotPassword);
-router.get('/reset-password/:id/:token', jwtAuth, resetPassword);
+router.get('/reset-password/:id/:token', resetPassword);
 router.post('/reset-password', passwordReset);
 
 export default router;
