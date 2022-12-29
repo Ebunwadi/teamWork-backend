@@ -103,7 +103,7 @@ export const forgotPassword = async (req, res) => {
       email,
       isAdmin,
     };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '5m' });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '10m' });
     const link = `https://ebubeproject.onrender.com/api/v1/auth/reset-password/${userId}/${token}`;
 
     const transporter = nodemailer.createTransport({
@@ -118,7 +118,7 @@ export const forgotPassword = async (req, res) => {
       to: email,
       subject: 'Password Reset',
       text: `hello ${firstName}, you requested a change in your password you can reset it using this link ${link}.
-The link expires in five mins`,
+The link expires in ten mins`,
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
