@@ -124,8 +124,12 @@ The link expires in five mins`,
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         res.send(error);
+        console.log(error);
       } else {
-        res.send(`Email sent: ${info.response}`);
+        res.json({
+          status: 'success',
+          message: `Email sent: ${info.response}`,
+        });
       }
     });
   } catch (error) {
@@ -169,7 +173,6 @@ export const passwordReset = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log(error);
     res.json({ status: 'Something Went Wrong' });
   }
 };
