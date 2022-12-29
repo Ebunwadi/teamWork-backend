@@ -154,19 +154,13 @@ export const resetPassword = async (req, res) => {
     const verifiedUser = jwt.verify(token, process.env.JWT_SECRET);
     req.user = verifiedUser;
     const userId = req.user.id;
+    console.log(userId);
     // if (id !== userId) {
     //   return res.status(401).json({
     //     status: 'error',
     //     error: 'ID does not match',
     //   });
     // }
-    res.status(201).json({
-      status: 'success',
-      data: {
-        token,
-        userId,
-      },
-    });
     res.redirect('https://preeminent-meringue-b5c8b0.netlify.app/resetPassword');
   } catch (error) {
     return res.status(401).json({
