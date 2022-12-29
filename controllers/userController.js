@@ -154,12 +154,12 @@ export const resetPassword = async (req, res) => {
     const verifiedUser = jwt.verify(token, process.env.JWT_SECRET);
     req.user = verifiedUser;
     const userId = req.user.id;
-    if (id !== userId) {
-      return res.status(401).json({
-        status: 'error',
-        error: 'ID does not match',
-      });
-    }
+    // if (id !== userId) {
+    //   return res.status(401).json({
+    //     status: 'error',
+    //     error: 'ID does not match',
+    //   });
+    // }
     res.status(201).json({
       status: 'success',
       data: {
