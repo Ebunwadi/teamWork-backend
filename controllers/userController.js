@@ -142,36 +142,35 @@ The link expires in ten mins`,
 };
 
 export const resetPassword = async (req, res) => {
-  const { id, token } = req.params;
-  const user = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
-  if (user.rows.length === 0) {
-    return res.status(401).json({
-      status: 'error',
-      error: 'User does not exist',
-    });
-  }
   try {
+    const { id, token } = req.params;
+    const user = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+    if (user.rows.length === 0) {
+      return res.status(401).json({
+        status: 'error',
+        error: 'User does not exist',
+      });
+    }
     const verifiedUser = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = verifiedUser;
-    const userId = req.user.id;
-    console.log(userId);
+    if (!verifiedUser) {
+      res.json({
+        error: 'invalid token',
+      });
+    }
+    // req.user = verifiedUser;
+    // const userId = req.user.id;
+    // console.log(userId);
     // if (id !== userId) {
     //   return res.status(401).json({
     //     status: 'error',
     //     error: 'ID does not match',
     //   });
     // }
-    res.redirect('https://preeminent-meringue-b5c8b0.netlify.app/resetPassword');
+    // res.redirect('https://preeminent-meringue-b5c8b0.netlify.app/resetPassword');
   } catch (error) {
     return res.status(401).json({
       status: 'error',
       error,
-    });
-  }
-  if (!token) {
-    return res.status(403).json({
-      status: 'error',
-      error: 'authorization denied',
     });
   }
 };
