@@ -104,7 +104,8 @@ export const forgotPassword = async (req, res) => {
       isAdmin,
     };
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '10m' });
-    const link = `https://ebubeproject.onrender.com/api/v1/auth/reset-password/${userId}/${token}`;
+    // const link = `https://preeminent-meringue-b5c8b0.netlify.app/resetPassword/${userId}/${token}`;
+    const link = `https://localhost:3000/resetPassword/${userId}/${token}`;
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
