@@ -172,12 +172,6 @@ export const resetPassword = async (req, res) => {
 export const passwordReset = async (req, res) => {
   const { id, token } = req.params;
   jwt.verify(token, process.env.JWT_SECRET);
-  if (!token) {
-    return res.status(403).json({
-      status: 'error',
-      error: 'authorization denied',
-    });
-  }
   try {
     const { password } = req.body;
     const user = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
@@ -201,7 +195,7 @@ export const passwordReset = async (req, res) => {
   } catch (error) {
     return res.status(401).json({
       status: 'error',
-      error,
+      error: `${error}.message`,
     });
   }
 };
