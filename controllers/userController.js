@@ -26,10 +26,10 @@ export const createUser = async (req, res) => {
     [firstName, lastName, email, hashedPassword, gender, jobRole, department, address, isAdmin],
   );
 
-  const userId = newUser.rows[0].id;
+  const id = newUser.rows[0].id;
 
   const payload = {
-    userId,
+    id,
     email,
     isAdmin,
   };
@@ -63,11 +63,11 @@ export const loginUser = async (req, res) => {
     });
   }
 
-  const userId = user.rows[0].id;
+  const id = user.rows[0].id;
   const isAdmin = user.rows[0].is_admin;
 
   const payload = {
-    userId,
+    id,
     email,
     isAdmin,
   };
@@ -94,18 +94,18 @@ export const forgotPassword = async (req, res) => {
         error: 'Email doesnt exist',
       });
     }
-    const userId = user.rows[0].id;
+    const id = user.rows[0].id;
     const isAdmin = user.rows[0].is_admin;
     const firstName = user.rows[0].first_name;
 
     const payload = {
-      userId,
+      id,
       email,
       isAdmin,
     };
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '10m' });
     // const link = `https://preeminent-meringue-b5c8b0.netlify.app/resetPassword/${userId}/${token}`;
-    const link = `https://localhost:3000/resetPassword/${userId}/${token}`;
+    const link = `https://localhost:3000/resetPassword/${id}/${token}`;
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -132,7 +132,7 @@ The link expires in ten mins`,
           message: `Email sent: ${info.response}`,
           data: {
             token,
-            userId,
+            id,
           },
         });
       }
