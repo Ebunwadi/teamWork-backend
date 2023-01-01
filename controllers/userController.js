@@ -193,9 +193,10 @@ export const passwordReset = async (req, res) => {
       },
     });
   } catch (error) {
+    console.log(error);
     return res.status(401).json({
       status: 'error',
-      error: `${error}.message`,
+      error: 'something is wrong ',
     });
   }
 };
