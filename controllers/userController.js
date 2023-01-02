@@ -105,7 +105,6 @@ export const forgotPassword = async (req, res) => {
     };
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '10m' });
     const link = `https://preeminent-meringue-b5c8b0.netlify.app/resetPassword/${id}/${token}`;
-    // const link = `https://ebubeproject.onrender.com/api/v1/auth/reset-password/${id}/${token}`;
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -130,10 +129,6 @@ The link expires in ten mins`,
         res.json({
           status: 'success',
           message: `Email sent: ${info.response}`,
-          data: {
-            token,
-            id,
-          },
         });
       }
     });
@@ -153,14 +148,12 @@ export const resetPassword = async (req, res) => {
       });
     }
     const verifiedUser = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(verifiedUser.id);
     res.status(201).json({
       status: 'success',
       data: {
         verifiedUser,
       },
     });
-    // res.redirect('https://preeminent-meringue-b5c8b0.netlify.app/resetPassword');
   } catch (error) {
     return res.status(401).json({
       status: 'error',
