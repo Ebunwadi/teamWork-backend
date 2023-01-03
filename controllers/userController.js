@@ -165,13 +165,22 @@ export const resetPassword = async (req, res) => {
 export const passwordReset = async (req, res) => {
   const { id, token } = req.params;
   try {
-    jwt.verify(token, process.env.JWT_SECRET);
+    const verify = jwt.verify(token, process.env.JWT_SECRET);
+    const userid = verify.id;
+    console.log(userid, typeof (userid));
+    console.log(id, typeof (id));
     const { password } = req.body;
     const user = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
     if (user.rows.length === 0) {
       return res.status(401).json({
         status: 'error',
         error: 'User does not exist',
+      });
+    }
+    if (Number(userid) !== Number(id)) {
+      return res.status(401).json({
+        status: 'error',
+        error: 'unauthorised user',
       });
     }
     const saltRounds = 10;
