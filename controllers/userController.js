@@ -137,38 +137,36 @@ The link expires in ten mins`,
   }
 };
 
-export const resetPassword = async (req, res) => {
-  try {
-    const { id, token } = req.params;
-    const user = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
-    if (user.rows.length === 0) {
-      return res.status(401).json({
-        status: 'error',
-        error: 'User does not exist',
-      });
-    }
-    const verifiedUser = jwt.verify(token, process.env.JWT_SECRET);
-    res.status(201).json({
-      status: 'success',
-      data: {
-        verifiedUser,
-      },
-    });
-  } catch (error) {
-    return res.status(401).json({
-      status: 'error',
-      error,
-    });
-  }
-};
+// export const resetPassword = async (req, res) => {
+//   try {
+//     const { id, token } = req.params;
+//     const user = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+//     if (user.rows.length === 0) {
+//       return res.status(401).json({
+//         status: 'error',
+//         error: 'User does not exist',
+//       });
+//     }
+//     const verifiedUser = jwt.verify(token, process.env.JWT_SECRET);
+//     res.status(201).json({
+//       status: 'success',
+//       data: {
+//         verifiedUser,
+//       },
+//     });
+//   } catch (error) {
+//     return res.status(401).json({
+//       status: 'error',
+//       error,
+//     });
+//   }
+// };
 
 export const passwordReset = async (req, res) => {
   const { id, token } = req.params;
   try {
     const verify = jwt.verify(token, process.env.JWT_SECRET);
     const userid = verify.id;
-    console.log(userid, typeof (userid));
-    console.log(id, typeof (id));
     const { password } = req.body;
     const user = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
     if (user.rows.length === 0) {
@@ -198,7 +196,7 @@ export const passwordReset = async (req, res) => {
     console.log(error);
     return res.status(401).json({
       status: 'error',
-      error,
+      error: 'something went wrong, try again',
     });
   }
 };

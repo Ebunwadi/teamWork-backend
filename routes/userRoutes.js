@@ -3,7 +3,7 @@ import {
   createUser,
   loginUser,
   forgotPassword,
-  resetPassword,
+  // resetPassword,
   passwordReset,
 } from '../controllers/userController.js';
 import validateSignUp from '../middleware/validations/validate-signup.js';
@@ -17,7 +17,7 @@ const router = Router();
 router.post('/create-user', jwtAuth, adminAuth, validateSignUp, createUser);
 router.post('/login-user', validateLogin, loginUser);
 router.post('/forgot-password', forgotPassword);
-router.get('/reset-password/:id/:token', resetPassword);
+// router.get('/reset-password/:id/:token', resetPassword);
 router.patch('/reset-password/:id/:token', validateForgotPassword, passwordReset);
 
 export default router;
