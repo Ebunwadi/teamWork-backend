@@ -5,6 +5,10 @@ const schema = Joi.object().keys({
     .min(4)
     .max(50)
     .required(),
+  confirmPassword: Joi.string()
+    .min(4)
+    .max(50)
+    .required(),
 });
 
 const validateForgotPassword = async (req, res, next) => {
