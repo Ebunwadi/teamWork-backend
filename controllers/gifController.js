@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv';
 import cloudinary from 'cloudinary';
+import asyncHandler from 'express-async-handler';
 import pool from '../database/connect.js';
 
 dotenv.config();
@@ -11,43 +12,35 @@ cloudinary.config({
 });
 
 // create gif
-export const createGif = async (req, res) => {
+export const createGif = asyncHandler(async (req, res) => {
   const { title } = req.body;
   const { image } = req.files;
 
-  try {
-    if (!image) return res.status(404).json({ message: 'you need to upload a gif' });
-    if (!title) return res.status(400).json({ message: 'gif caption is required' });
-    const result = await cloudinary.v2.uploader.upload(image.tempFilePath, {
-      folder: 'gifs',
-    });
-    const { secure_url: secureUrl, public_id: publicId, created_at: createdOn } = result;
-    const userId = req.user.userid;
-    const gifDB = await pool.query(
-      `INSERT INTO gifs (title, image_url, created_on, public_id, user_id) 
-          VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-      [title, secureUrl, createdOn, publicId, userId],
-    );
+  if (!image) return res.status(404).json({ message: 'you need to upload a gif' });
+  if (!title) return res.status(400).json({ message: 'gif caption is required' });
+  const result = await cloudinary.v2.uploader.upload(image.tempFilePath, {
+    folder: 'gifs',
+  });
+  const { secure_url: secureUrl, public_id: publicId, created_at: createdOn } = result;
+  const userId = req.user.userid;
+  const gifDB = await pool.query(
+    `INSERT INTO gifs (title, image_url, created_on, public_id, user_id) 
+        VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+    [title, secureUrl, createdOn, publicId, userId],
+  );
 
-    return res.status(201).json({
-      status: 'sucess',
-      data: {
-        gifId: gifDB.rows[0].id,
-        message: 'GIF image successfully posted.',
-        createdOn,
-        title,
-        imageUrl: secureUrl,
-        userId,
-      },
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send({
-      status: 'error',
-      message: 'something went wrong',
-    });
-  }
-};
+  return res.status(201).json({
+    status: 'sucess',
+    data: {
+      gifId: gifDB.rows[0].id,
+      message: 'GIF image successfully posted.',
+      createdOn,
+      title,
+      imageUrl: secureUrl,
+      userId,
+    },
+  });
+});
 
 // delete gif
 export const deleteGif = async (req, res) => {
