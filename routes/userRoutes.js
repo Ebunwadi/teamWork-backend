@@ -13,7 +13,6 @@ import adminAuth from '../middleware/admin-auth.js';
 import jwtAuth from '../middleware/jwtAuth.js';
 
 const router = Router();
-// "proxy": "https://ebubeproject.onrender.com/",
 
 router.post('/create-user', jwtAuth, adminAuth, validateSignUp, createUser);
 router.post('/login-user', validateLogin, loginUser);

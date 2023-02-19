@@ -17,7 +17,7 @@ const pool = new Pool({
   user: 'ebube',
   password: process.env.RENDER_PASSWORD,
   port: 5432,
-  database: 'teamwork_fcgt',
+  database: 'teamwork_owlc',
   ssl: true,
 });
 export default pool;
