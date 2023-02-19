@@ -1,43 +1,37 @@
 import { DateTime } from 'luxon';
+import asyncHandler from 'express-async-handler';
 import pool from '../database/connect.js';
 
-export const createArticleComment = async (req, res) => {
-  try {
-    const { comment } = req.body;
-    const { id } = req.params;
-    const createdOn = DateTime.now().toJSDate();
-    const userId = req.user.userid;
+export const createArticleComment = asyncHandler(async (req, res) => {
+  const { comment } = req.body;
+  const { id } = req.params;
+  const createdOn = DateTime.now().toJSDate();
+  const userId = req.user.userid;
 
-    const articles = await pool.query('SELECT * FROM articles WHERE id = $1', [id]);
-    if (articles.rows.length === 0) {
-      return res.status(404).json({
-        status: 'error',
-        error: 'article with the specified ID NOT found',
-      });
-    }
-    await pool.query(`INSERT INTO article_comment (comments, created_at, article_id, user_id) 
-        VALUES ($1, $2, $3, $4) RETURNING *`, [comment, createdOn, id, userId]);
-
-    return res.status(201).json({
-      status: 'success',
-      data: {
-        message: 'comment successfully created',
-        createdOn,
-        articleTitle: articles.rows[0].title,
-        comment,
-        userId,
-      },
-    });
-  } catch (error) {
-    return res.status(500).send({
+  const articles = await pool.query('SELECT * FROM articles WHERE id = $1', [id]);
+  if (articles.rows.length === 0) {
+    return res.status(404).json({
       status: 'error',
-      message: 'something went wrong',
+      error: 'article with the specified ID NOT found',
     });
   }
-};
+  await pool.query(`INSERT INTO article_comment (comments, created_at, article_id, user_id) 
+      VALUES ($1, $2, $3, $4) RETURNING *`, [comment, createdOn, id, userId]);
+
+  return res.status(201).json({
+    status: 'success',
+    data: {
+      message: 'comment successfully created',
+      createdOn,
+      articleTitle: articles.rows[0].title,
+      comment,
+      userId,
+    },
+  });
+});
 
 // flag a comment
-export const flagArticleComment = async (req, res) => {
+export const flagArticleComment = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { isFlagged } = req.body;
   const articleComment = await pool.query('SELECT * FROM article_comment WHERE id = $1', [id]);
@@ -57,10 +51,10 @@ export const flagArticleComment = async (req, res) => {
       },
     });
   }
-};
+});
 
 // admin can delete a comment flagged as inappropriate
-export const deleteFlaggedArticleComment = async (req, res) => {
+export const deleteFlaggedArticleComment = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const articleComment = await pool.query('SELECT * FROM article_comment WHERE id = $1', [id]);
   if (articleComment.rows.length === 0) {
@@ -77,4 +71,4 @@ export const deleteFlaggedArticleComment = async (req, res) => {
       message: 'comment successfully deleted',
     },
   });
-};
+});

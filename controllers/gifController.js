@@ -43,53 +43,45 @@ export const createGif = asyncHandler(async (req, res) => {
 });
 
 // delete gif
-export const deleteGif = async (req, res) => {
-  try {
-    const { gifId } = req.params;
-    const gifDB = await pool.query('SELECT * FROM gifs WHERE id = $1', [gifId]);
-    if (gifDB.rows.length === 0) {
-      return res.status(404).json({
-        status: 'error',
-        error: 'there is no gif with this id',
-      });
-    }
-
-    if (gifDB.rows[0].user_id !== req.user.userid) {
-      return res.status(403).json({
-        status: 'error',
-        message: 'You cannot delete a Gif you didnt post',
-      });
-    }
-
-    await cloudinary.v2.uploader.destroy(gifDB.rows[0].public_id);
-
-    await pool.query('DELETE FROM gifs WHERE id = $1', [gifId]);
-    return res.status(202).json({
-      status: 'success',
-      data: {
-        message: 'Gif successfully deleted',
-      },
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send({
+export const deleteGif = asyncHandler(async (req, res) => {
+  const { gifId } = req.params;
+  const gifDB = await pool.query('SELECT * FROM gifs WHERE id = $1', [gifId]);
+  if (gifDB.rows.length === 0) {
+    return res.status(404).json({
       status: 'error',
-      message: 'something went wrong',
+      error: 'there is no gif with this id',
     });
   }
-};
+
+  if (gifDB.rows[0].user_id !== req.user.userid) {
+    return res.status(403).json({
+      status: 'error',
+      message: 'You cannot delete a Gif you didnt post',
+    });
+  }
+
+  await cloudinary.v2.uploader.destroy(gifDB.rows[0].public_id);
+
+  await pool.query('DELETE FROM gifs WHERE id = $1', [gifId]);
+  return res.status(202).json({
+    status: 'success',
+    data: {
+      message: 'Gif successfully deleted',
+    },
+  });
+});
 
 // get all gifs
-export const getAllGifs = async (req, res) => {
+export const getAllGifs = asyncHandler(async (req, res) => {
   const gifs = await pool.query('SELECT * FROM gifs ORDER BY created_on DESC');
   res.status(200).json({
     status: 'success',
     data: gifs.rows,
   });
-};
+});
 
 // get one gif
-export const getSingleGif = async (req, res) => {
+export const getSingleGif = asyncHandler(async (req, res) => {
   const { gifId } = req.params;
   const gif = await pool.query('SELECT * FROM gifs WHERE id = $1', [gifId]);
   if (gif.rows.length === 0) {
@@ -102,10 +94,10 @@ export const getSingleGif = async (req, res) => {
     status: 'success',
     data: gif.rows[0],
   });
-};
+});
 
 // flag a gif
-export const flagGif = async (req, res) => {
+export const flagGif = asyncHandler(async (req, res) => {
   const { gifId } = req.params;
   const { isFlagged } = req.body;
   const gif = await pool.query('SELECT * FROM gifs WHERE id = $1', [gifId]);
@@ -125,10 +117,10 @@ export const flagGif = async (req, res) => {
       },
     });
   }
-};
+});
 
 // admin can delete a gif flagged as inappropriate
-export const deleteFlaggedGif = async (req, res) => {
+export const deleteFlaggedGif = asyncHandler(async (req, res) => {
   const { gifId } = req.params;
   const gif = await pool.query('SELECT * FROM gifs WHERE id = $1', [gifId]);
   if (gif.rows.length === 0) {
@@ -145,4 +137,4 @@ export const deleteFlaggedGif = async (req, res) => {
       message: 'Gif successfully deleted',
     },
   });
-};
+});

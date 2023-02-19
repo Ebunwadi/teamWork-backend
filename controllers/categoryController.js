@@ -1,7 +1,8 @@
+import asyncHandler from 'express-async-handler';
 import pool from '../database/connect.js';
 
 // admin can create a category
-export const createCategory = async (req, res) => {
+export const createCategory = asyncHandler(async (req, res) => {
   const { categoryName } = req.body;
   const category = await pool.query('SELECT * FROM category WHERE category_name=$1', [categoryName]);
   if (category.rows.length > 0) {
@@ -20,19 +21,19 @@ export const createCategory = async (req, res) => {
       message: 'Category Successfully created',
     },
   });
-};
+});
 
 // employees can view all categories
-export const viewAllCategories = async (req, res) => {
+export const viewAllCategories = asyncHandler(async (req, res) => {
   const categories = await pool.query('SELECT * FROM category');
   res.status(200).json({
     status: 'success',
     data: categories.rows,
   });
-};
+});
 
 // employees can get a single category
-export const getCategory = async (req, res) => {
+export const getCategory = asyncHandler(async (req, res) => {
   const categoryId = req.params.id;
   const category = await pool.query('SELECT * FROM category WHERE id = $1', [categoryId]);
   if (category.rows.length === 0) {
@@ -45,10 +46,10 @@ export const getCategory = async (req, res) => {
     status: 'success',
     data: category.rows[0],
   });
-};
+});
 
 // employees can view all articles in a category
-export const getAllArticlesInCategory = async (req, res) => {
+export const getAllArticlesInCategory = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const article = await pool.query(`SELECT * FROM articles WHERE category_id = ${id}`);
   if (article.rows.length === 0) {
@@ -61,10 +62,10 @@ export const getAllArticlesInCategory = async (req, res) => {
     status: 'success',
     data: article.rows,
   });
-};
+});
 
 // admin can delete a category
-export const deleteCategory = async (req, res) => {
+export const deleteCategory = asyncHandler(async (req, res) => {
   const categoryId = req.params.id;
   const category = await pool.query('SELECT * FROM category WHERE id = $1', [categoryId]);
   if (category.rows.length === 0) {
@@ -78,10 +79,10 @@ export const deleteCategory = async (req, res) => {
     status: 'success',
     message: 'Category succesfully deleted',
   });
-};
+});
 
 // admin can update a category
-export const updateCategory = async (req, res) => {
+export const updateCategory = asyncHandler(async (req, res) => {
   const categoryId = req.params.id;
   const { categoryName } = req.body;
   const category = await pool.query('SELECT * FROM category WHERE id = $1', [categoryId]);
@@ -96,4 +97,4 @@ export const updateCategory = async (req, res) => {
     status: 'success',
     message: 'Category succesfully updated',
   });
-};
+});

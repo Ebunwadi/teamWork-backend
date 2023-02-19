@@ -24,6 +24,7 @@
     "bcrypt": "^5.1.0",
     "cloudinary": "^1.32.0",
     "cors": "^2.8.5",
+    "date-fns": "^2.29.3",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-async-handler": "^1.2.0",
@@ -31,7 +32,8 @@
     "jsonwebtoken": "^8.5.1",
     "luxon": "^3.1.0",
     "nodemailer": "^6.8.0",
-    "pg": "^8.8.0"
+    "pg": "^8.8.0",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "chai": "^4.3.6",

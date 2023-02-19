@@ -1,8 +1,9 @@
 import { DateTime } from 'luxon';
+import asyncHandler from 'express-async-handler';
 import pool from '../database/connect.js';
 
 // create article
-export const createArticle = async (req, res) => {
+export const createArticle = asyncHandler(async (req, res) => {
   const userId = req.user.userid;
   const { title, article, categoryId } = req.body;
   const createdOn = DateTime.now().toJSDate();
@@ -26,19 +27,19 @@ export const createArticle = async (req, res) => {
       userId,
     },
   });
-};
+});
 
 // get all articles
-export const getAllArticles = async (req, res) => {
+export const getAllArticles = asyncHandler(async (req, res) => {
   const articles = await pool.query('SELECT * FROM articles ORDER BY created_at DESC');
   return res.status(200).json({
     status: 'Success',
     data: articles.rows,
   });
-};
+});
 
 // get a single article
-export const getArticle = async (req, res) => {
+export const getArticle = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const article = await pool.query(`SELECT * FROM articles WHERE id = ${id}`);
   if (article.rows.length === 0) {
@@ -51,10 +52,10 @@ export const getArticle = async (req, res) => {
     status: 'success',
     data: article.rows[0],
   });
-};
+});
 
 // delete an article
-export const deleteArticle = async (req, res) => {
+export const deleteArticle = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
   const articles = await pool.query(`SELECT * FROM articles WHERE id = ${id}`);
@@ -78,10 +79,10 @@ export const deleteArticle = async (req, res) => {
       message: 'Article succesfully deleted',
     },
   });
-};
+});
 
 // edit an article
-export const updateArticle = async (req, res) => {
+export const updateArticle = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
   const articles = await pool.query(`SELECT * FROM articles WHERE id = ${id}`);
@@ -107,10 +108,10 @@ export const updateArticle = async (req, res) => {
       article,
     },
   });
-};
+});
 
 // flag an article
-export const flagArticle = async (req, res) => {
+export const flagArticle = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { isFlagged } = req.body;
   const articles = await pool.query('SELECT * FROM articles WHERE id = $1', [id]);
@@ -130,10 +131,10 @@ export const flagArticle = async (req, res) => {
       },
     });
   }
-};
+});
 
 // admin can delete an article flagged as inappropriate
-export const deleteFlaggedArticle = async (req, res) => {
+export const deleteFlaggedArticle = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const articles = await pool.query('SELECT * FROM articles WHERE id = $1', [id]);
   if (articles.rows.length === 0) {
@@ -149,4 +150,4 @@ export const deleteFlaggedArticle = async (req, res) => {
       message: 'flagged article successfully deleted',
     },
   });
-};
+});

@@ -6,6 +6,7 @@ import userRoutes from './routes/userRoutes.js';
 import gifRoutes from './routes/gifRoutes.js';
 import articleRoutes from './routes/articleRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
+import { errorHandler } from './middleware/errorHandler.js';
 
 dotenv.config();
 
@@ -31,6 +32,8 @@ app.get('/', (req, res) => {
   const url = 'https://documenter.getpostman.com/view/10653175/2s8YeprsYk';
   res.redirect(url);
 });
+
+app.use(errorHandler);
 
 const port = process.env.PORT || 5000;
 export default app.listen(port, () => {
