@@ -13,7 +13,6 @@ export default (req, res, next) => {
       req.user = verifiedUser;
       next();
     } catch (error) {
-      console.log(error);
       return res.status(401).json({
         status: 'error',
         error: 'Invalid Token',
